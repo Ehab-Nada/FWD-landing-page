@@ -1,8 +1,5 @@
 //select sections from html file
-const sections = document.querySelectorAll("section");
-
-//select the unorderd list to append list items on it
-const ul = document.getElementById("navbar__list");
+const sections = document.getElementsByTagName("section");
 
 //create List Items li in the unorderd list navbar__list
 function createListItems() {
@@ -16,37 +13,62 @@ function createListItems() {
     let secLink = section.getAttribute("id");
     //create list that holds section name
     let listItem = document.createElement("li");
-    listItem.innerHTML = `<a class="menu__link" href="#${secLink}">${secName}</a>`;
-    //add created list into navbar
+    //creact a element
+    let anc = document.createElement("a");
+    // add class to the a
+    anc.className = "menu__link";
+    //give text to the name of section
+    anc.textContent = secName;
+    //set href attribue to the id of section in order to jumb
+    anc.setAttribute("href", `#${secLink}`);
+    //append a element to the li element
+    listItem.append(anc);
+    //add created list into navbar using fregmant virtual dom
     fragment.appendChild(listItem);
   }
-  ul.appendChild(fragment);
+  //append lists with anchors that create to the ul in the navbar
+  document.getElementById("navbar__list").appendChild(fragment);
+}
+
+// determine if any part of element visible in viewport
+function isInViewport(el) {
+  let top = el.offsetTop;
+  let left = el.offsetLeft;
+  let width = el.offsetWidth;
+  let height = el.offsetHeight;
+
+  while (el.offsetParent) {
+    el = el.offsetParent;
+    top += el.offsetTop;
+    left += el.offsetLeft;
+  }
+
+  return (
+    top < window.pageYOffset + window.innerHeight &&
+    left < window.pageXOffset + window.innerWidth &&
+    top + height > window.pageYOffset &&
+    left + width > window.pageXOffset
+  );
 }
 
 //add active class to the section at the viewport
-function Active() {
+function scrollActive() {
   for (let section of sections) {
-    //getBoundingClientRect is built-in function that return postion of the element at the viewport
-    let bounding = section.getBoundingClientRect();
-    let height = window.innerHeight;
-    if (bounding.top >= -100 && bounding.bottom <= height + 100) {
-      //checks if section at the viewport to add or remove active class
-      if (!section.classList.contains("your-active-class")) {
-        section.classList.add("your-active-class");
-      }
-    } else {
-      section.classList.remove("your-active-class");
-    }
+    //check if the section in viewport to add or remove active class
+    isInViewport(section)
+      ? section.classList.add("your-active-class")
+      : section.classList.remove("your-active-class");
   }
 }
 
 //an app function that runs all program
 function App() {
+  //add scroll behavior smooth to style of the whole html
   document.documentElement.style.scrollBehavior = "smooth";
   //run Create list function that take sections names and id to add them into li in the ul
   createListItems();
   //when user scroll the page this event listener will define which function at the view port to add active class
-  document.addEventListener("scroll", Active);
+  document.addEventListener("scroll", scrollActive);
 }
 
 //run the appliction
