@@ -68,7 +68,7 @@ section {
 .navbar__menu ul {
   padding-left: 0;
   margin: 0;
-  text-align: right;
+  text-align: left;
 }
 
 .navbar__menu li {
@@ -76,6 +76,7 @@ section {
 }
 
 .navbar__menu .menu__link {
+  cursor: pointer;
   display: block;
   padding: 1em;
   font-weight: bold;
@@ -83,9 +84,14 @@ section {
   color: #000;
 }
 
-.navbar__menu .menu__link:hover {
+.navbar__menu .active {
   background: #333;
   color: #fff;
+  transition: ease 0.3s all;
+}
+
+.navbar__menu .menu__link:hover {
+  transform: scale(1.1);
   transition: ease 0.3s all;
 }
 

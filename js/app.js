@@ -1,5 +1,6 @@
 //select sections from html file
 const sections = document.getElementsByTagName("section");
+const links = document.getElementsByClassName("menu__link");
 
 //create List Items li in the unorderd list navbar__list
 function createListItems() {
@@ -19,8 +20,6 @@ function createListItems() {
     anc.className = "menu__link";
     //give text to the name of section
     anc.textContent = secName;
-    //set href attribue to the id of section in order to jumb
-    anc.setAttribute("href", `#${secLink}`);
     //append a element to the li element
     listItem.append(anc);
     //add created list into navbar using fregmant virtual dom
@@ -29,25 +28,40 @@ function createListItems() {
   //append lists with anchors that create to the ul in the navbar
   document.getElementById("navbar__list").appendChild(fragment);
 }
+//clicking link item scroll to specific section
+function scrollToSection() {
+  for (let item of links) {
+    item.addEventListener("click", function clicked() {
+      let active = document.getElementsByClassName("active");
+      if (active.length === 0) {
+        item.classList.add("active");
+      } else {
+        active[0].classList.remove("active");
+        item.classList.add("active");
+      }
+      for (let section of sections) {
+        if (section.getAttribute("data-nav") === item.textContent) {
+          section.scrollIntoView({
+            behavior: "smooth",
+          });
+        }
+      }
+    });
+  }
+}
 
 // determine if any part of element visible in viewport
 function isInViewport(el) {
-  let top = el.offsetTop;
-  let left = el.offsetLeft;
-  let width = el.offsetWidth;
-  let height = el.offsetHeight;
-
-  while (el.offsetParent) {
-    el = el.offsetParent;
-    top += el.offsetTop;
-    left += el.offsetLeft;
-  }
-
+  let rect = el.getBoundingClientRect();
   return (
-    top < window.pageYOffset + window.innerHeight &&
-    left < window.pageXOffset + window.innerWidth &&
-    top + height > window.pageYOffset &&
-    left + width > window.pageXOffset
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <=
+      (window.innerHeight ||
+        document.documentElement.clientHeight) /* or $(window).height() */ &&
+    rect.right <=
+      (window.innerWidth ||
+        document.documentElement.clientWidth) /* or $(window).width() */
   );
 }
 
@@ -55,20 +69,32 @@ function isInViewport(el) {
 function scrollActive() {
   for (let section of sections) {
     //check if the section in viewport to add or remove active class
-    isInViewport(section)
-      ? section.classList.add("your-active-class")
-      : section.classList.remove("your-active-class");
+    if (isInViewport(section)) {
+      section.classList.add("your-active-class");
+      let active = document.getElementsByClassName("active");
+      for (let item of links) {
+        if (item.textContent === section.getAttribute("data-nav")) {
+          if (active.length === 0) {
+            item.classList.add("active");
+          } else {
+            active[0].classList.remove("active");
+            item.classList.add("active");
+          }
+        }
+      }
+    } else {
+      section.classList.remove("your-active-class");
+    }
   }
 }
 
 //an app function that runs all program
 function App() {
-  //add scroll behavior smooth to style of the whole html
-  document.documentElement.style.scrollBehavior = "smooth";
   //run Create list function that take sections names and id to add them into li in the ul
   createListItems();
   //when user scroll the page this event listener will define which function at the view port to add active class
   document.addEventListener("scroll", scrollActive);
+  scrollToSection();
 }
 
 //run the appliction
