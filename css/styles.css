@@ -128,6 +128,11 @@ section {
     padding: 4em;
   }
 }
+@media screen and (max-width: 650px) {
+  body {
+    font-size: 0.8em;
+  }
+}
 
 section:nth-of-type(even) .landing__container {
   margin-right: 0;
