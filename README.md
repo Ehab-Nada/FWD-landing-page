@@ -1,5 +1,5 @@
 # Landing Page Project
-# Live Server -> 
+# Live Server -> https://hopamnada.github.io/FWD-landing-page/
 
 ## Read the comments at the app.js file
 
